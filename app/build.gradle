@@ -1,0 +1,61 @@
+apply plugin: 'com.android.model.application'
+
+model {
+
+
+    repositories {
+        libs(PrebuiltLibraries) {
+            Substrate {
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("src/main/prebuildSo/libsubstrate.so")
+                }
+            }
+            SubstrateDvm {
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("src/main/prebuildSo/libsubstrate-dvm.so")
+                }
+            }
+        }
+    }
+
+    android.sources {
+        main {
+            jni {
+                dependencies {
+                    library "Substrate"
+                    library "SubstrateDvm"
+                }
+            }
+        }
+    }
+
+    android {
+        compileSdkVersion 20
+        buildToolsVersion "24.0.3"
+
+        defaultConfig {
+            applicationId "com.example.cydianativehook"
+            minSdkVersion.apiLevel 8
+            targetSdkVersion.apiLevel 21
+        }
+
+        buildTypes {
+            release {
+                minifyEnabled false
+            }
+        }
+
+        ndk {
+            moduleName "test.cy"
+            ldLibs.add("log");
+//            ldLibs.add("dl");
+        }
+
+        productFlavors {
+            ndk.abiFilters.add("armeabi")
+        }
+    }
+}
+dependencies {
+    compile 'com.android.support:support-v4:20.0.0'
+}
