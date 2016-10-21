@@ -38,6 +38,16 @@ const char* ex4 = "com.weisheng.xready";
 const char* ex5 = "com.cyjh.mobileanjian";
 const char* ex6 = "com.saurik.substrate";
 const char* ex7 = "com.n0n3m4.gltools";
+/*system exclude*/
+const char* ex8 = "app_process";
+const char* ex9 = "/system/bin/debuggerd";
+const char* ex10 = "system_server";
+const char* ex11 = "zygote";
+const char* ex12 = "/system/bin/mediaserver";
+const char* ex13 = "/system/bin/surfaceflinger";
+const char* ex14 = "/system/bin/bootanimation";
+const char* ex15 = "/system/bin/keystore";
+const char* ex16 = "/system/bin/vold";
 
 
 
@@ -120,7 +130,10 @@ int exclude(const char *s)
         int i = 0;
         i = strstr(s, ex0) != NULL || strstr(s, ex1) != NULL || strstr(s, ex2) != NULL ||
             strstr(s, ex3) != NULL || strstr(s, ex4) != NULL || strstr(s, ex5) != NULL ||
-            strstr(s, ex6) != NULL || strstr(s, ex7) != NULL;
+            strstr(s, ex6) != NULL || strstr(s, ex7) != NULL || strstr(s, ex8) != NULL ||
+            strstr(s, ex9) != NULL || strstr(s, ex10) != NULL || strstr(s, ex11) !=NULL ||
+            strstr(s, ex12) != NULL || strstr(s, ex13) != NULL || strstr(s, ex14) != NULL ||
+            strstr(s, ex15) != NULL || strstr(s, ex16) != NULL;
         return i;
 }
 
