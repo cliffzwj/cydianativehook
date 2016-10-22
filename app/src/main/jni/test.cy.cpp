@@ -42,6 +42,7 @@ const char *ex14 = "/system/bin/bootanimation";
 const char *ex15 = "/system/bin/keystore";
 const char *ex16 = "/system/bin/vold";
 const char *ex17 = "/system/bin/netd";
+const char *ex18 = "/system/bin/rild";
 
 
 //need redirect file element, file0 > file1 >.... order by  occurrence probability
@@ -142,7 +143,8 @@ int exclude(const char *s) {
         strstr(s, ex6) != NULL || strstr(s, ex7) != NULL || strstr(s, ex8) != NULL ||
         strstr(s, ex9) != NULL || strstr(s, ex10) != NULL || strstr(s, ex11) != NULL ||
         strstr(s, ex12) != NULL || strstr(s, ex13) != NULL || strstr(s, ex14) != NULL ||
-        strstr(s, ex15) != NULL || strstr(s, ex16) != NULL || strstr(s, ex17) != NULL;
+        strstr(s, ex15) != NULL || strstr(s, ex16) != NULL || strstr(s, ex17) != NULL ||
+        strstr(s, ex18) != NULL;
     return i;
 }
 
