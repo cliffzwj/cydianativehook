@@ -1,13 +1,7 @@
 #include "substrate.h"
-#include "test.cy.h"
 #include <android/log.h>
 #include <fcntl.h>
-#include <jni.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #define TAG "HOOKTEST"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
@@ -18,7 +12,7 @@
 MSConfig(MSFilterLibrary,"/system/lib/libc.so")
 
 
-#define GETLR(store_lr) __asm__ __volatile__("mov %0, lr\n\t" : "=r"(store_lr))
+//#define GETLR(store_lr) __asm__ __volatile__("mov %0, lr\n\t" : "=r"(store_lr))
 
 //head prifix
 #define PERSIST "persist."
