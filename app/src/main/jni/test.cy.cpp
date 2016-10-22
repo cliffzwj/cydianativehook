@@ -196,7 +196,7 @@ int ReadConfigFile(const char *path, char *str)
 //在原属性名前面加"persist."用来配置重定向的属性,且重启还会保留
 char *AddPreFix(const char *prefix, const char *oril)
 {
-        char head[128] = {0};
+        char head[64] = {0};
         strcpy(head, prefix);
         strcat(head, oril);
         return head;
@@ -494,7 +494,7 @@ FILE *newfopen(const char *path, const char *mode)
 
 
                 LOGI("[fffopen] file path:%s, pid:%s\n", path, bufferProcess);
-                char lastname[64] = {0};
+                char lastname[32] = {0};
                 char *newpath;
                 FindLastName(path, SLASH, lastname);
                 newpath = AddPreFix(REDIRECT, lastname);
@@ -543,7 +543,7 @@ int newopen(char *path, int acc, int permission)
 
 
                 LOGI("[open] file path:%s, pid:%s\n", path, bufferProcess);
-                char lastname[64] = {0};
+                char lastname[32] = {0};
                 char *newpath;
                 FindLastName(path, SLASH, lastname);
                 newpath = AddPreFix(REDIRECT, lastname);
