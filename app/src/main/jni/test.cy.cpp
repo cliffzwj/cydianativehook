@@ -456,7 +456,7 @@ int new_property_get(const char *name, char *value)
                 }
                 LOGI("[property_get] key name:%s, pid:%s\n", name, bufferProcess);
                 char lenstr[8]= {0};
-                char lastpropname[32]= {0};
+                char lastpropname[16]= {0};
                 char result[64] = {0};
                 sprintf(lenstr, "%d", strlen(name));
                 FindLastName(name, DOT, lastpropname);
