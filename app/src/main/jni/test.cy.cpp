@@ -61,6 +61,8 @@ const char *file11 = "/address";
 const char *file12 = "/csd";
 const char *file13 = "/serial";
 const char *file14 = "/name";
+const char *file15 = "proc/sys/kernel/osrelease";
+const char *file16 = "proc/sys/kernel/version";
 
 //need redirect system property, must use strcmp
 const char *prop0 = "ro.build.id";
@@ -169,7 +171,10 @@ int NeedRedirect(const char *file) {
           strstr(file, file9) != NULL ||
           strstr(file, file10) != NULL || strstr(file, file11) != NULL ||
           strstr(file, file12) != NULL ||
-          strstr(file, file13) != NULL || strstr(file, file14) != NULL));
+          strstr(file, file13) != NULL || strstr(file, file14) != NULL)) ||
+        //others
+        strstr(file, file15) != NULL || strstr(file, file16) != NULL;
+
 
     return i;
 
