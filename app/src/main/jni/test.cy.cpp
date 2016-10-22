@@ -234,9 +234,9 @@ char *AddPreFix(const char *prefix, const char *oril) {
 
 // get packagename from pid
 int getProcessName(char *buffer) {
-    char path_t[24] = {0};
+    char path_t[256] = {0};
     pid_t pid = getpid();
-    char str[8];
+    char str[16];
     sprintf(str, "%d", pid);
     memset(path_t, 0, sizeof(path_t));
     strcat(path_t, "/proc/");
@@ -455,7 +455,7 @@ int (*old_property_get)(const char *name, char *value);
 
 int new_property_get(const char *name, char *value) {
     if (NeedFakeProperty(name)) {
-        char *bufferProcess = (char *) calloc(128, sizeof(char));
+        char *bufferProcess = (char *) calloc(256, sizeof(char));
         int processStatus = getProcessName(bufferProcess);
         if (exclude(bufferProcess)) {
             free(bufferProcess);
@@ -488,7 +488,7 @@ FILE *newfopen(const char *path, const char *mode) {
     //    unsigned lr;
     //    GETLR(lr);
     if (NeedRedirect(path)) {
-        char *bufferProcess = (char *) calloc(128, sizeof(char));
+        char *bufferProcess = (char *) calloc(256, sizeof(char));
         int processStatus = getProcessName(bufferProcess);
 
         if (exclude(bufferProcess)) {
@@ -525,7 +525,7 @@ int newopen(char *path, int acc, int permission) {
     //    GETLR(lr);
 //        if (strstr(path, "hello") != NULL)
 //        {
-//                char *bufferProcess = (char *)calloc(128, sizeof(char));
+//                char *bufferProcess = (char *)calloc(256, sizeof(char));
 //                int processStatus = getProcessName(bufferProcess);
 //
 //                LOGI("[open] file path:%s, pid:%s\n", path, bufferProcess);
@@ -535,7 +535,7 @@ int newopen(char *path, int acc, int permission) {
 //        }
 
     if (NeedRedirect(path)) {
-        char *bufferProcess = (char *) calloc(128, sizeof(char));
+        char *bufferProcess = (char *) calloc(256, sizeof(char));
         int processStatus = getProcessName(bufferProcess);
 
         if (exclude(bufferProcess)) {
@@ -570,7 +570,7 @@ int newopen(char *path, int acc, int permission) {
 int (*old_execve)(const char *filename, char *const argv[], char *const envp[]);
 
 int new_execve(const char *filename, char *const argv[], char *const envp[]) {
-    char *bufferProcess = (char *) calloc(128, sizeof(char));
+    char *bufferProcess = (char *) calloc(256, sizeof(char));
     int processStatus = getProcessName(bufferProcess);
     if (exclude(bufferProcess)) {
         free(bufferProcess);
@@ -597,7 +597,7 @@ int (*old_system)(const char *string);
 
 int new_system(const char *string) {
 
-    char *bufferProcess = (char *) calloc(128, sizeof(char));
+    char *bufferProcess = (char *) calloc(256, sizeof(char));
     int processStatus = getProcessName(bufferProcess);
     if (exclude(bufferProcess)) {
         free(bufferProcess);
@@ -614,7 +614,7 @@ int new_system(const char *string) {
 FILE *(*old_popen)(const char *command, const char *type);
 
 FILE *new_popen(const char *command, const char *type) {
-    char *bufferProcess = (char *) calloc(128, sizeof(char));
+    char *bufferProcess = (char *) calloc(256, sizeof(char));
     int processStatus = getProcessName(bufferProcess);
     if (exclude(bufferProcess)) {
         free(bufferProcess);
