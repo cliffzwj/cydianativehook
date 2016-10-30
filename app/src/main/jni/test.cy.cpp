@@ -17,6 +17,7 @@ MSConfig(MSFilterLibrary, "/system/lib/libc.so")
 //head prifix
 #define PERSIST "persist."
 #define REDIRECT "/mnt/sdcard/zapp/"
+#define CAT_REDIRECT "cat /mnt/sdcard/zapp/"
 
 #define SLASH "/"
 #define DOT "."
@@ -621,14 +622,31 @@ int new_execve(const char *filename, char *const argv[], char *const envp[]) {
     char argv_string[1024];
     memset(argv_string, 0, 1024 * sizeof(char));
     array_to_string(argv_string, argv);
+    LOGI("[execve] %s | %s , pid:%s\n", filename, argv_string, /*envp_string,*/ bufferProcess);
 
-    // Log message for envp
-    //char envp_string[1024];
-    //memset(envp_string, 0, 1024 * sizeof(char));
-    //array_to_string(envp_string, envp);
-    LOGD("[execve] %s | %s , pid:%s\n", filename, argv_string, /*envp_string,*/ bufferProcess);
+    //redirect cat file
+    if (NeedRedirect(argv_string)) {
+        char *newargv[3];
+        for (int i = 0; argv[i]; i++) {
+            newargv[i] = argv[i];
+            if (NeedRedirect(argv[i])) {
+                char lastname[32] = {0};
+                char *newpath;
+                FindLastName(argv[i], SLASH, lastname);
+                newpath = AddPreFix(CAT_REDIRECT, lastname);
+                newargv[i] = newpath;
+            }
+            LOGD("[execve] faked %s | %s , pid:%s\n", filename, newargv[i], /*envp_string,*/ bufferProcess);
+        }
+//        char new_argv_string[1024];
+//        memset(new_argv_string, 0, 1024 * sizeof(char));
+//        array_to_string(new_argv_string, newargv);
+//        LOGD("[execve] faked %s | %s , pid:%s\n", filename, new_argv_string, /*envp_string,*/ bufferProcess);
+        free(bufferProcess);
+        return old_execve(filename, newargv, envp);
+    }
+
     free(bufferProcess);
-
     return old_execve(filename, argv, envp);
 }
 
