@@ -340,6 +340,46 @@ void array_to_string(char *dest_string, char *const src_array[]) {
     // printf("after :%s\n", dest_string);
 }
 
+//strSrc为原字符串，strFind是待替换的字符串，strReplace为替换字符串,strSrc需要有足够的空间
+void StrReplaceB(char *strSrc, char *strFind, char *strReplace) {
+    while (*strSrc != '\0') {
+        if (*strSrc == *strFind) {
+            if (strncmp(strSrc, strFind, strlen(strFind)) == 0) {
+                int i = strlen(strFind);
+                int j = strlen(strReplace);
+                char *q = strSrc + i;
+                //p、q均指向剩余字符串的首地址
+                char *p = q;
+                char *repl = strReplace;
+                int lastLen = 0;
+                while (*q++ != '\0')
+                    lastLen++;
+                //临时开辟一段内存保存剩下的字符串,防止内存覆盖
+                char *temp = new char[lastLen + 1];
+                for (int k = 0; k < lastLen; k++) {
+                    *(temp + k) = *(p + k);
+                }
+                *(temp + lastLen) = '\0';
+                while (*repl != '\0') {
+                    *strSrc++ = *repl++;
+                }
+                p = strSrc;
+                //回收动态开辟内存
+                char *pTemp = temp;
+                while (*pTemp != '\0') {
+                    *p++ = *pTemp++;
+                }
+                delete temp;
+                *p = '\0';
+            }
+            else
+                strSrc++;
+        }
+        else
+            strSrc++;
+    }
+}
+
 
 // MSConfig(MSFilterLibrary, "libdvm.so");
 //
