@@ -608,15 +608,24 @@ int newopen(char *path, int acc, int permission) {
 //http://blog.csdn.net/guoping16/article/details/6583383
 //int (*old_execve)(const char *filename, char *const argv[]);
 //int new_execve(const char *filename, char *const argv[])
-int (*old_execve)(const char *filename, char *const argv[], char *const envp[]);
+int (*old_execve)(const char *filename, char *argv[], char *const envp[]);
 
-int new_execve(const char *filename, char *const argv[], char *const envp[]) {
+int new_execve(const char *filename, char *argv[], char *const envp[]) {
     char *bufferProcess = (char *) calloc(256, sizeof(char));
     int processStatus = getProcessName(bufferProcess);
     if (exclude(bufferProcess)) {
         free(bufferProcess);
         return old_execve(filename, argv, envp);
     }
+
+//    for (int i = 0; argv[i]; i++){
+//        LOGI("[execve_argv] %s | %s , pid:%s\n", filename, argv[i], /*envp_string,*/ bufferProcess);
+//    }
+//
+//    for (int i = 0; envp[i]; i++){
+//        LOGI("[execve_envp] %s | %s , pid:%s\n", filename, envp[i], /*envp_string,*/ bufferProcess);
+//    }
+
 
     // Log message for argv
     char argv_string[1024];
@@ -626,24 +635,25 @@ int new_execve(const char *filename, char *const argv[], char *const envp[]) {
 
     //redirect cat file
     if (NeedRedirect(argv_string)) {
-        char *newargv[3];
+//        char *newargv[]={};
         for (int i = 0; argv[i]; i++) {
-            newargv[i] = argv[i];
+//            newargv[i] = argv[i];
             if (NeedRedirect(argv[i])) {
                 char lastname[32] = {0};
                 char *newpath;
                 FindLastName(argv[i], SLASH, lastname);
                 newpath = AddPreFix(CAT_REDIRECT, lastname);
-                newargv[i] = newpath;
+                argv[i] = newpath;
             }
-            LOGD("[execve] faked %s | %s , pid:%s\n", filename, newargv[i], /*envp_string,*/ bufferProcess);
+            LOGD("[execve] faked %s | %s , pid:%s\n", filename, argv[i], /*envp_string,*/ bufferProcess);
         }
 //        char new_argv_string[1024];
 //        memset(new_argv_string, 0, 1024 * sizeof(char));
 //        array_to_string(new_argv_string, newargv);
 //        LOGD("[execve] faked %s | %s , pid:%s\n", filename, new_argv_string, /*envp_string,*/ bufferProcess);
-        free(bufferProcess);
-        return old_execve(filename, newargv, envp);
+
+//        free(bufferProcess);
+//        return old_execve(filename, newargv, envp);
     }
 
     free(bufferProcess);
