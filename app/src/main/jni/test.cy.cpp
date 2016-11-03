@@ -143,11 +143,11 @@ int exclude(const char *s) {
     int i = 0;
     i = strstr(s, ex0) != NULL || strstr(s, ex1) != NULL || strstr(s, ex2) != NULL ||
         strstr(s, ex3) != NULL || strstr(s, ex4) != NULL || strstr(s, ex5) != NULL ||
-        strstr(s, ex6) != NULL || strstr(s, ex7) != NULL || strstr(s, ex8) != NULL ||
+        strstr(s, ex6) != NULL || strstr(s, ex7) != NULL /*|| strstr(s, ex8) != NULL ||
         strstr(s, ex9) != NULL || strstr(s, ex10) != NULL || strstr(s, ex11) != NULL ||
         strstr(s, ex12) != NULL || strstr(s, ex13) != NULL || strstr(s, ex14) != NULL ||
         strstr(s, ex15) != NULL || strstr(s, ex16) != NULL || strstr(s, ex17) != NULL ||
-        strstr(s, ex18) != NULL;
+        strstr(s, ex18) != NULL*/;
     return i;
 }
 
