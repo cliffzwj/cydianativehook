@@ -669,7 +669,9 @@ int new_execve(const char *filename, char *argv[], char *const envp[]) {
     }
 
     //fake other single cmdline
-    if (strstr(argv_string, dumpsys_iphonesubinfo) != NULL) {
+    if (strstr(argv_string, dumpsys_iphonesubinfo) != NULL &&
+        strstr(argv_string, dumpsys_iphonesubinfo_1) == NULL &&
+        strstr(argv_string, dumpsys_iphonesubinfo_2) == NULL) {
         for (int i = 0; argv[i]; i++) {
             if (strstr(argv[i], dumpsys_iphonesubinfo) != NULL) {
                 char *newcmd;
