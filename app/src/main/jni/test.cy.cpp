@@ -64,6 +64,12 @@ const char *file13 = "/serial";
 const char *file14 = "/name";
 const char *file15 = "proc/sys/kernel/osrelease";
 const char *file16 = "proc/sys/kernel/version";
+//cold reboot different
+const char *file17 = "proc/sys/kernel/random/boot_id";
+//read different every time
+const char *file18 = "proc/sys/kernel/random/uuid";
+const char *file19 = "proc/net/arp";
+
 
 //need redirect system property, must use strcmp
 const char *prop0 = "ro.build.id";
@@ -186,7 +192,9 @@ int NeedRedirect(const char *file) {
           strstr(file, file12) != NULL ||
           strstr(file, file13) != NULL || strstr(file, file14) != NULL)) ||
         //others
-        strstr(file, file15) != NULL || strstr(file, file16) != NULL;
+        strstr(file, file15) != NULL || strstr(file, file16) != NULL ||
+        strstr(file, file17) != NULL || strstr(file, file18) != NULL ||
+        strstr(file, file19) != NULL;
 
 
     return i;
