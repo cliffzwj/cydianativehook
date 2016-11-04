@@ -138,6 +138,18 @@ const char *prop42 = "ro.modversion";
 const char *prop43 = "ro.rommanager.developerid";
 
 
+//should be faked single comdline and redirect cmdline
+char dumpsys_iphonesubinfo[] = "dumpsys iphonesubinfo";
+char dumpsys_iphonesubinfo_1[] = "dumpsys iphonesubinfo1";
+char dumpsys_iphonesubinfo_2[] = "dumpsys iphonesubinfo2";
+char fake_dumpsys_iphonesubinfo[] = "dumpsys_iphonesubinfo";
+
+char service_call_iphonesubinfo_1[] = "service call iphonesubinfo 1";
+char fake_service_call_iphonesubinfo_1[] = "service_call_iphonesubinfo_1";
+
+
+
+
 //return 1, contain the s
 int exclude(const char *s) {
     int i = 0;
@@ -227,7 +239,7 @@ int ReadConfigFile(const char *path, char *str) {
 
 //在原属性名前面加"persist."用来配置重定向的属性,且重启还会保留
 char *AddPreFix(const char *prefix, const char *oril) {
-    char head[64] = {0};
+    char head[128] = {0};
     strcpy(head, prefix);
     strcat(head, oril);
     return head;
@@ -645,7 +657,7 @@ int new_execve(const char *filename, char *argv[], char *const envp[]) {
                 newpath = AddPreFix(CAT_REDIRECT, lastname);
                 argv[i] = newpath;
             }
-            LOGD("[execve] faked %s | %s , pid:%s\n", filename, argv[i], /*envp_string,*/ bufferProcess);
+            LOGD("[execve] faked %s | %s , pid:%s\n", filename, argv[i], /*envp_string,*/bufferProcess);
         }
 //        char new_argv_string[1024];
 //        memset(new_argv_string, 0, 1024 * sizeof(char));
@@ -655,6 +667,23 @@ int new_execve(const char *filename, char *argv[], char *const envp[]) {
 //        free(bufferProcess);
 //        return old_execve(filename, newargv, envp);
     }
+
+    //fake other single cmdline
+    if (strstr(argv_string, dumpsys_iphonesubinfo) != NULL) {
+        for (int i = 0; argv[i]; i++) {
+            if (strstr(argv[i], dumpsys_iphonesubinfo) != NULL) {
+                char *newcmd;
+                char temp[128] = {0};
+                strcpy(temp, argv[i]);
+                newcmd = AddPreFix(CAT_REDIRECT, fake_dumpsys_iphonesubinfo);
+                StrReplaceB(temp, dumpsys_iphonesubinfo, newcmd);
+                argv[i] = temp;
+            }
+            LOGD("[execve] faked %s | %s , pid:%s\n", filename, argv[i], /*envp_string,*/bufferProcess);
+        }
+
+    }
+
 
     free(bufferProcess);
     return old_execve(filename, argv, envp);
