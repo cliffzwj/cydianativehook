@@ -684,6 +684,20 @@ int new_execve(const char *filename, char *argv[], char *const envp[]) {
 
     }
 
+    if (strstr(argv_string, service_call_iphonesubinfo_1) != NULL) {
+        for (int i = 0; argv[i]; i++) {
+            if (strstr(argv[i], service_call_iphonesubinfo_1) != NULL) {
+                char *newcmd;
+                char temp[128] = {0};
+                strcpy(temp, argv[i]);
+                newcmd = AddPreFix(CAT_REDIRECT, fake_service_call_iphonesubinfo_1);
+                StrReplaceB(temp, service_call_iphonesubinfo_1, newcmd);
+                argv[i] = temp;
+            }
+            LOGD("[execve] faked %s | %s , pid:%s\n", filename, argv[i], /*envp_string,*/bufferProcess);
+        }
+
+    }
 
     free(bufferProcess);
     return old_execve(filename, argv, envp);
