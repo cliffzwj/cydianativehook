@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="internalOnly"
     package="com.example.cydianativehook"
-    android:versionCode="2"
-    android:versionName="10.23" >
+    android:versionCode="3"
+    android:versionName="11.06" >
 
     <uses-sdk
         android:minSdkVersion="8"

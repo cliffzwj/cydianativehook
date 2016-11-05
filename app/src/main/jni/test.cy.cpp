@@ -119,7 +119,8 @@ const char *prop30 = "ril.sw_ver";
 const char *prop31 = "ro.baseband";
 //GPU can not fake in all system
 //[ro.board.platform]: [omap4] [ro.board.platform]: [exynos4]  GPU infomation
-//const char* prop32 = "ro.board.platform";
+//need fake only to getprop and shua apk or other installed apk
+const char* prop32 = "ro.board.platform";
 //[ro.boot.baseband]: [I9250XXLJ1]
 const char *prop33 = "ro.boot.baseband";
 //[ro.boot.bootloader]: [PRIMEMD04]
@@ -168,7 +169,6 @@ int exclude(const char *s) {
         strstr(s, ex18) != NULL*/;
     return i;
 }
-
 
 //return 1 : reprsent need redirect the file
 int NeedRedirect(const char *file) {
@@ -535,6 +535,25 @@ int new_property_get(const char *name, char *value) {
         name = result;
         LOGD("[property_get] fake newname:%s, pid:%s\n", name, bufferProcess);
         free(bufferProcess);
+    }
+    if (strcmp(name, prop32) == 0){
+        char *bufferProcess = (char *) calloc(256, sizeof(char));
+        int processStatus = getProcessName(bufferProcess);
+        if(strstr(bufferProcess, "getprop") != NULL) {
+            LOGE("[property_get] key name:%s, pid:%s\n", name, bufferProcess);
+            char lenstr[8] = {0};
+            char lastpropname[16] = {0};
+            char result[64] = {0};
+            sprintf(lenstr, "%d", strlen(name));
+            FindLastName(name, DOT, lastpropname);
+            strcat(result, PERSIST);
+            strcat(result, lenstr);
+            strcat(result, DOT);
+            strcat(result, lastpropname);
+            name = result;
+            LOGE("[property_get] fake newname:%s, pid:%s\n", name, bufferProcess);
+            free(bufferProcess);
+        }
     }
 
     return old_property_get(name, value);
