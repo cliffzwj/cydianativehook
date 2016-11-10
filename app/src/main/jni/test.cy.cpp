@@ -1,5 +1,6 @@
 #include "substrate.h"
 #include <android/log.h>
+#include <sys/socket.h>
 #include <fcntl.h>
 #include <stdio.h>
 
@@ -21,6 +22,8 @@ MSConfig(MSFilterLibrary, "/system/lib/libc.so")
 
 #define SLASH "/"
 #define DOT "."
+
+int MAX_DATA_LEN = 300;
 
 
 // exclude app
@@ -401,6 +404,16 @@ void StrReplaceB(char *strSrc, char *strFind, char *strReplace) {
     }
 }
 
+void to_hex(char* input_string, char* output_string, int count){
+    char *tmp_output_string = output_string;
+    int i = 0;
+    for(i = 0; i < count ;i++ )
+    {
+        sprintf(tmp_output_string, "%02x", input_string[i]);
+        tmp_output_string += 2;
+    }
+}
+
 
 // MSConfig(MSFilterLibrary, "libdvm.so");
 //
@@ -768,6 +781,43 @@ FILE *new_popen(const char *command, const char *type) {
     return file;
 }
 
+//hook sendto
+int (*old_sendto)(int s,  const void *msg, int len, int flags, const struct sockaddr *to, int tolen);
+
+int new_sendto(int s,  const void *msg, int len, int flags, const struct sockaddr *to, int tolen){
+    int send_count = old_sendto(s, msg, len, flags, to, tolen);
+    int pid = getpid();
+
+
+    char *tmp_buf = (char*)msg;
+//    int total_count = send_count;
+//    char *send_content = (char*) malloc(MAX_DATA_LEN * 2 + 1);
+//    while(total_count > 0 && send_content != NULL && tmp_buf != NULL){
+//        int copy_count = (total_count >= MAX_DATA_LEN ? MAX_DATA_LEN : total_count);
+//        to_hex(tmp_buf, send_content, copy_count);
+//        LOGD("[sendto] content:%s, count:%d, pid:%d\n", send_content, send_count, pid);
+//        total_count -= copy_count;
+//        tmp_buf += copy_count;
+//    }
+
+    LOGE("[sendto] content:%s, count:%d, pid:%d\n", tmp_buf, send_count, pid);
+//    free(send_content);
+    return send_count;
+}
+
+//hook read
+int (*old_read)(int handle, void *buffer, int nbyte);
+
+int new_read(int handle, void *buffer, int nbyte){
+    int read_count = old_read(handle, buffer, nbyte);
+    int pid = getpid();
+    char *tmp_buf = (char*)buffer;
+    LOGD("[read] content:%s, count:%d, pid:%d\n", tmp_buf, read_count, pid);
+    return read_count;
+}
+
+
+
 
 
 /*======================================================GPU========================================================*/
@@ -837,6 +887,23 @@ MSInitialize {
             MSHookFunction(hookexecve, (void *) &new_execve, (void **) &old_execve);
         }
 
+        // hook sendto
+        void *hooksendto = MSFindSymbol(image, "sendto");
+        if (hooksendto == NULL) {
+            LOGI("error find sendto ");
+        }
+        else {
+            MSHookFunction(hooksendto, (void *) &new_sendto, (void **) &old_sendto);
+        }
+
+        // hook read
+        void *hookread = MSFindSymbol(image, "read");
+        if (hookread == NULL) {
+            LOGI("error find read ");
+        }
+        else {
+            MSHookFunction(hookread, (void *) &new_read, (void **) &old_read);
+        }
         //hook system
         //void *hooksystem = MSFindSymbol(image, "system");
         //if (hooksystem == NULL)
