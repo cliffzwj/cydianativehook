@@ -782,28 +782,84 @@ FILE *new_popen(const char *command, const char *type) {
 }
 
 //hook sendto
-int (*old_sendto)(int s,  const void *msg, int len, int flags, const struct sockaddr *to, int tolen);
+int (*old_sendto)(int s, const void *msg, int len, int flags, const struct sockaddr *to, int tolen);
 
-int new_sendto(int s,  const void *msg, int len, int flags, const struct sockaddr *to, int tolen){
+int new_sendto(int s, const void *msg, int len, int flags, const struct sockaddr *to, int tolen) {
     int send_count = old_sendto(s, msg, len, flags, to, tolen);
     int pid = getpid();
 
 
-    char *tmp_buf = (char*)msg;
-//    int total_count = send_count;
-//    char *send_content = (char*) malloc(MAX_DATA_LEN * 2 + 1);
-//    while(total_count > 0 && send_content != NULL && tmp_buf != NULL){
-//        int copy_count = (total_count >= MAX_DATA_LEN ? MAX_DATA_LEN : total_count);
-//        to_hex(tmp_buf, send_content, copy_count);
-//        LOGD("[sendto] content:%s, count:%d, pid:%d\n", send_content, send_count, pid);
-//        total_count -= copy_count;
-//        tmp_buf += copy_count;
-//    }
+    char *tmp_buf = (char *) msg;
 
-    LOGE("[sendto] content:%s, count:%d, pid:%d\n", tmp_buf, send_count, pid);
-//    free(send_content);
+    if (tmp_buf != NULL)
+        LOGE("[sendto] content:%s, count:%d, pid:%d\n", tmp_buf, send_count, pid);
     return send_count;
 }
+
+//hook sendmsg
+int (*old_sendmsg)(int s, const struct msghdr *msg, int flags);
+
+int new_sendmsg(int s, const struct msghdr *msg, int flags){
+    int status = old_sendmsg(s, msg, flags);
+	int pid = getpid();
+
+	char *msg_name = (char*)msg->msg_name;
+	struct iovec *msg_iov = msg->msg_iov;
+    char *msg_content = (char*)msg_iov->iov_base;
+
+//	if(msg_iov != NULL){
+//		size_t iovlen = msg_iov->iov_len;
+//		char msg_content[iovlen * 2 + 1];
+//		to_hex(msg_iov->iov_base, msg_content, iovlen);
+//		LOGI("{\"Basic\":[\"%d\",\"%d\",\"false\"],\"InvokeApi\":{\"%s\":{\"s\":\"%d\",\"msg->msg_name\":\"%s\",\"msg->msg_iov->iov_base\":\"%s\",\"flags\":\"%d\"},\"return\":{\"int\":\"%d\"}}}",
+//				uid, NATIVE_SYSTEM_API, "sendmsg", s, msg_name, msg_content, flags, status);
+//	}else
+//		LOGI("{\"Basic\":[\"%d\",\"%d\",\"false\"],\"InvokeApi\":{\"%s\":{\"s\":\"%d\",\"msg->msg_name\":\"%s\",\"msg->msg_iov->iov_base\":\"%s\",\"flags\":\"%d\"},\"return\":{\"int\":\"%d\"}}}",
+//						uid, NATIVE_SYSTEM_API, "sendmsg", s, msg_name, "", flags, status);
+
+
+    LOGE("[sendmsg] msgname:%s, content:%s, status:%d, pid:%d\n", msg_name, msg_content, status, pid);
+	return status;
+}
+
+
+
+
+
+
+
+
+
+
+//hook send
+int (*old_send)(int s, const void *buf, size_t len, int flags);
+
+int new_send(int s, const void *buf, size_t len, int flags) {
+    int send_count = old_send(s, buf, len, flags);
+    int pid = getpid();
+
+    char *tmp_buf = (char *) buf;
+
+    if (tmp_buf != NULL)
+        LOGE("[send] content:%s, count:%d, pid:%d\n", tmp_buf, send_count, pid);
+    return send_count;
+}
+
+//hook write
+int (*old_write)(int fd, const void *buf, size_t count);
+
+int new_write(int fd, const void *buf, size_t count) {
+    int write_count = old_write(fd, buf, count);
+    int pid = getpid();
+
+    char *tmp_buf = (char *) buf;
+
+    if (tmp_buf != NULL)
+        LOGE("[write] content:%s, count:%d, pid:%d\n", tmp_buf, write_count, pid);
+    return write_count;
+}
+
+
 
 //hook read
 int (*old_read)(int handle, void *buffer, int nbyte);
@@ -896,14 +952,41 @@ MSInitialize {
             MSHookFunction(hooksendto, (void *) &new_sendto, (void **) &old_sendto);
         }
 
+//        // hook sendmsg
+//        void *hooksendmsg = MSFindSymbol(image, "sendmsg");
+//        if (hooksendmsg == NULL) {
+//            LOGI("error find sendmsg ");
+//        }
+//        else {
+//            MSHookFunction(hooksendmsg, (void *) &new_sendmsg, (void **) &old_sendmsg);
+//        }
+//
+//        // hook send
+//        void *hooksend = MSFindSymbol(image, "send");
+//        if (hooksend == NULL) {
+//            LOGI("error find send ");
+//        }
+//        else {
+//            MSHookFunction(hooksend, (void *) &new_send, (void **) &old_send);
+//        }
+//
+//        // hook write
+//        void *hookwrite = MSFindSymbol(image, "write");
+//        if (hookwrite == NULL) {
+//            LOGI("error find write ");
+//        }
+//        else {
+//            MSHookFunction(hookwrite, (void *) &new_write, (void **) &old_write);
+//        }
+
         // hook read
-        void *hookread = MSFindSymbol(image, "read");
-        if (hookread == NULL) {
-            LOGI("error find read ");
-        }
-        else {
-            MSHookFunction(hookread, (void *) &new_read, (void **) &old_read);
-        }
+//        void *hookread = MSFindSymbol(image, "read");
+//        if (hookread == NULL) {
+//            LOGI("error find read ");
+//        }
+//        else {
+//            MSHookFunction(hookread, (void *) &new_read, (void **) &old_read);
+//        }
         //hook system
         //void *hooksystem = MSFindSymbol(image, "system");
         //if (hooksystem == NULL)
